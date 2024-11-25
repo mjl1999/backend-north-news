@@ -5,6 +5,7 @@ const app = require("../app")
 const db = require("../db/seeds/seed"); // the file we use seed to enter data into the database
 const data = require("../db/data/test-data"); // the initial test data to reseed our file with
 const dbConnection = require("../db/connection");
+require("jest-sorted")
 
 afterAll(() => {
   return dbConnection.end();
@@ -67,6 +68,33 @@ describe("GET /api/articles/:article_id", () => {
           }
         )
         
+      });
+  });
+});
+
+
+describe("GET /api/articles", () => {
+  test("gives status of 200 and responds with all articles", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { allArticles } }) => {
+        allArticles.forEach((article) => {
+					expect(Object.keys(article)).toHaveLength(8);
+					expect(article).toMatchObject({
+						article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+					});
+				});
+        
+        
+        expect(allArticles).toBeSortedBy('created_at', { descending: true });
       });
   });
 });

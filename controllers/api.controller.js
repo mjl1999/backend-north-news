@@ -1,6 +1,6 @@
 
 const endpointsOverview = require("../endpoints.json")
-const {retrieveTopics, retrieveArticle} = require("../models/api.models")
+const {retrieveTopics, retrieveArticle, retrieveAllArticles} = require("../models/api.models")
 exports.getApi = (req, res, next) => {
     try {
         res.status(200).send({endpoints: endpointsOverview})
@@ -32,6 +32,19 @@ exports.getArticle = async (req, res, next) => {
         const {article_id} = req.params
         const article = await retrieveArticle(article_id)
         res.status(200).send({chosenArticle: article})
+    }
+    catch (err) {
+        console.log(err)
+        next(err)
+    }
+   
+}
+
+
+exports.getArticles = async (req, res, next) => {
+    try {
+        const articles = await retrieveAllArticles()
+        res.status(200).send({allArticles: articles})
     }
     catch (err) {
         console.log(err)

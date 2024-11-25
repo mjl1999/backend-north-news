@@ -5,7 +5,7 @@ const {
   customErrorHandler,
   serverErrorHandler,
 } = require("./error");
-const { getApi, getApiTopics, getArticle} = require("./controllers/api.controller");
+const { getApi, getApiTopics, getArticle, getArticles} = require("./controllers/api.controller");
 
 app.get("/api", getApi);
 
@@ -13,6 +13,8 @@ app.get("/api/topics", getApiTopics);
 
 
 app.get("/api/articles/:article_id", getArticle);
+
+app.get("/api/articles", getArticles);
 
 
 // error handling below
