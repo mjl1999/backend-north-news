@@ -25,3 +25,22 @@ describe("GET /api", () => {
       });
   });
 });
+
+
+describe("GET /api/topics", () => {
+  test("gives status of 200 and responds with an object of topics", () => {
+    return request(app)
+      .get("/api/topics")
+      .expect(200)
+      .then(({ body: { allTopics } }) => {
+        allTopics.forEach((topic) => {
+					expect(Object.keys(topic)).toHaveLength(2);
+					expect(topic).toMatchObject({
+						slug: expect.any(String),
+						description: expect.any(String),
+					});
+				});
+        
+      });
+  });
+});
