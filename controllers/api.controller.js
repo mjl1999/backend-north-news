@@ -1,12 +1,12 @@
 
 const endpointsOverview = require("../endpoints.json")
 const {retrieveTopics, retrieveArticle, retrieveAllArticles} = require("../models/api.models")
+
 exports.getApi = (req, res, next) => {
     try {
         res.status(200).send({endpoints: endpointsOverview})
     }
     catch (err) {
-        console.log(err, "err is here")
         next(err)
     }
    
@@ -19,7 +19,6 @@ exports.getApiTopics = async (req, res, next) => {
         res.status(200).send({allTopics: topics})
     }
     catch (err) {
-        console.log(err)
         next(err)
     }
    
@@ -34,7 +33,6 @@ exports.getArticle = async (req, res, next) => {
         res.status(200).send({chosenArticle: article})
     }
     catch (err) {
-        console.log(err)
         next(err)
     }
    
@@ -47,7 +45,6 @@ exports.getArticles = async (req, res, next) => {
         res.status(200).send({allArticles: articles})
     }
     catch (err) {
-        console.log(err)
         next(err)
     }
    
