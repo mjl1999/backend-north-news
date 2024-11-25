@@ -44,3 +44,29 @@ describe("GET /api/topics", () => {
       });
   });
 });
+
+
+
+describe("GET /api/articles/:article_id", () => {
+  test("gives status of 200 and responds with the appropriate article", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then(({ body: { chosenArticle } }) => {
+        expect(Object.keys(chosenArticle)).toHaveLength(8);
+        expect(chosenArticle).toMatchObject(
+          { 
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+          }
+        )
+        
+      });
+  });
+});
