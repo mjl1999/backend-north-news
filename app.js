@@ -11,7 +11,8 @@ const {
   getArticle, 
   getArticles, 
   getArticleComments,
-  postArticleComment} = require("./controllers/api.controller");
+  postArticleComment,
+  updateArticle} = require("./controllers/api.controller");
 app.use(express.json())
 app.get("/api", getApi);
 
@@ -25,6 +26,9 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.post("/api/articles/:article_id/comments", postArticleComment);
+
+
+app.patch("/api/articles/:article_id", updateArticle);
 
 // error handling below
 app.all("/*", (req, res) => {
