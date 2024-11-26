@@ -125,8 +125,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(comment)
       .expect(201)
       .then(({ body: { userComment } }) => {
-        expect(Object.keys(userComment)).toHaveLength(6)
-        console.log(userComment)
+        expect(Object.keys(userComment)).toHaveLength(6);
         expect(userComment).toEqual(
           expect.objectContaining({
             author: "butter_bridge",
