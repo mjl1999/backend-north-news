@@ -175,3 +175,16 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+
+
+
+
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("removes comment based on comment_id", () => {
+    return request(app)
+      .delete("/api/comments/2")
+      .expect(204)
+  });
+});
+

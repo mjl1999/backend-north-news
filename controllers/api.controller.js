@@ -5,7 +5,9 @@ const {
   retrieveAllArticles,
   retrieveArticleComments,
   postComment,
-  patchArticle
+  patchArticle,
+  removeComment
+
 } = require("../models/api.models");
 
 exports.getApi = (req, res, next) => {
@@ -75,4 +77,18 @@ exports.updateArticle = async (req, res, next) => {
       } catch (err) {
         next(err);
       }
+
+}
+
+
+exports.deleteComment = async (req, res, next) => {
+  try {
+    const {comment_id} = req.params
+    await removeComment(comment_id)
+    res.status(204).send()
+  }
+  catch (err) {
+    next(err)
+  }
+
 }
