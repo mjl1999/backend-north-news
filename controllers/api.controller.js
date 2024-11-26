@@ -92,3 +92,15 @@ exports.deleteComment = async (req, res, next) => {
   }
 
 }
+
+
+
+
+exports.getUsers = async (req, res, next) => {
+  try {
+    const users = await retrieveAllUsers();
+    res.status(200).send({ allUsers: users });
+  } catch (err) {
+    next(err);
+  }
+};

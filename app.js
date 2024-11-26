@@ -14,7 +14,8 @@ const {
   postArticleComment,
 
   updateArticle,
-  deleteComment
+  deleteComment,
+  getUsers
 
 } = require("./controllers/api.controller");
 
@@ -32,22 +33,26 @@ app.get("/api/articles/:article_id/comments", getArticleComments);
 
 app.post("/api/articles/:article_id/comments", postArticleComment);
 
-
 app.patch("/api/articles/:article_id", updateArticle);
-
 
 app.delete("/api/comments/:comment_id", deleteComment)
 
+
+app.get("/api/users", getUsers);
+
 /* 
-CORE: DELETE /api/comments/:comment_id
+CORE: GET /api/users
 Description
 Should:
 
-be available on /api/comments/:comment_id.
-delete the given comment by comment_id.
+be available on /api/users.
+get all users.
 Responds with:
 
-status 204 and no content.
+an array of objects, each object should have the following properties:
+username
+name
+avatar_url
 Consider what errors could occur with this endpoint, and make sure to test for them.
 
 Remember to add a description of this endpoint to your /api endpoint.
