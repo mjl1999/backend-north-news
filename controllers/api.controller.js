@@ -6,7 +6,8 @@ const {
   retrieveArticleComments,
   postComment,
   patchArticle,
-  removeComment
+  removeComment,
+  retrieveAllUsers
 
 } = require("../models/api.models");
 
