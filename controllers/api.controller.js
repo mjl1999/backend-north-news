@@ -4,6 +4,7 @@ const {
   retrieveArticle,
   retrieveAllArticles,
   retrieveArticleComments,
+  postComment
 } = require("../models/api.models");
 
 exports.getApi = (req, res, next) => {
@@ -51,3 +52,15 @@ exports.getArticleComments = async (req, res, next) => {
     next(err);
   }
 };
+
+
+exports.postArticleComment = async (req, res, next) => {
+    try {
+        const { article_id } = req.params;
+        const {username, body} = req.body
+        const comment_posted = await postComment(article_id, username, body);
+        res.status(201).send({ userComment: comment_posted });
+      } catch (err) {
+        next(err);
+      }
+}
