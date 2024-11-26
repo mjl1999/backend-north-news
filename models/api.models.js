@@ -58,6 +58,21 @@ exports.postComment = async (article_id, username, body) => {
   const query = `INSERT INTO comments (article_id, author, body, created_at)
   VALUES ($1, $2, $3, NOW()) 
   RETURNING *;`
+
   const newComment = await db.query(query, [article_id, username, body])
+
   return newComment.rows[0]
 };
+
+
+exports.patchArticle = async (article_id, inc_votes) => {
+  await this.retrieveArticle(article_id);
+  const query = `
+  UPDATE articles 
+  SET votes = votes + $1 
+  WHERE article_id = $2 RETURNING *;`;
+
+  const updatedArticle = await db.query(query, [inc_votes, article_id])
+  return updatedArticle.rows[0]
+
+}

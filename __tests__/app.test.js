@@ -146,3 +146,32 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
+
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("updates votes on an article", () => {
+    const updateVotes = {
+      inc_votes: 100
+    };
+    return request(app)
+      .patch("/api/articles/2")
+      .send(updateVotes)
+      .expect(201)
+      .then(({ body: { updatedArticle } }) => {
+        expect(Object.keys(updatedArticle)).toHaveLength(8)
+        expect(updatedArticle).toMatchObject({
+          article_id: expect.any(Number),
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+        });
+        expect(updatedArticle.votes >= 100).toBe(true)
+
+        
+      });
+  });
+});
