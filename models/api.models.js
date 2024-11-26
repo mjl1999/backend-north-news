@@ -49,13 +49,11 @@ exports.retrieveAllArticles = async () => {
 };
 
 exports.retrieveArticleComments = async (article_id) => {
-  if (this.retrieveArticle(article_id)) {
+    await this.retrieveArticle(article_id)
     const query = `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC;`;
     const comments = await db.query(query, [article_id]);
     return comments.rows;
-  } else {
-    return Promise.reject({ status: 400, msg: "Bad Request" });
-  }
+  
 };
 // exports.retrieveArticleComments = async (article_id) => {
 //   if (Number.isInteger(Number(article_id))) {
