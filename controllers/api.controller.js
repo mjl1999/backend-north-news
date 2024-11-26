@@ -7,6 +7,7 @@ const {
   postComment,
   patchArticle,
   removeComment
+
 } = require("../models/api.models");
 
 exports.getApi = (req, res, next) => {
@@ -76,6 +77,7 @@ exports.updateArticle = async (req, res, next) => {
       } catch (err) {
         next(err);
       }
+
 }
 
 
@@ -88,4 +90,5 @@ exports.deleteComment = async (req, res, next) => {
   catch (err) {
     next(err)
   }
+
 }

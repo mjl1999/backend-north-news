@@ -12,10 +12,12 @@ const {
   getArticles, 
   getArticleComments,
   postArticleComment,
+
   updateArticle,
   deleteComment
 
 } = require("./controllers/api.controller");
+
 app.use(express.json())
 app.get("/api", getApi);
 
@@ -32,6 +34,7 @@ app.post("/api/articles/:article_id/comments", postArticleComment);
 
 
 app.patch("/api/articles/:article_id", updateArticle);
+
 
 app.delete("/api/comments/:comment_id", deleteComment)
 
