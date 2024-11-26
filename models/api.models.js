@@ -94,3 +94,12 @@ exports.removeComment = async (comment_id) => {
 
 
 }
+
+
+
+
+exports.retrieveAllUsers = async () => {
+  const query = `SELECT * FROM users;`
+  const users = await db.query(query);
+  return users.rows;
+};
