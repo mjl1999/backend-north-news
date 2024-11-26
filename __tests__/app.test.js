@@ -90,13 +90,12 @@ describe("GET /api/articles", () => {
   });
 });
 
-describe("/api/articles/:article_id/comments", () => {
+describe("GET /api/articles/:article_id/comments", () => {
   test("Responds with an array of comments for the given article_id", () => {
     return request(app)
-      .get("/api/articles/3/comments")
+      .get("/api/articles/2/comments")
       .expect(200)
       .then(({ body: { allArticleComments } }) => {
-        console.log(allArticleComments)
         allArticleComments.forEach((comment) => {
           expect(Object.keys(comment)).toHaveLength(6);
           expect(comment).toMatchObject({
@@ -110,6 +109,40 @@ describe("/api/articles/:article_id/comments", () => {
         });
         expect(allArticleComments).toBeSortedBy("created_at", {
           descending: true,
+        });
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("posts a new comment for a given article", () => {
+    const comment = {
+      username: "butter_bridge",
+      body: "testing, testing 123",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(comment)
+      .expect(201)
+      .then(({ body: { userComment } }) => {
+        expect(Object.keys(userComment)).toHaveLength(6)
+        console.log(userComment)
+        expect(userComment).toEqual(
+          expect.objectContaining({
+            author: "butter_bridge",
+            body: "testing, testing 123",
+            article_id: 2,
+            votes: 0,
+          })
+        );
+
+        expect(userComment).toMatchObject({
+          comment_id: expect.any(Number),
+          body: expect.any(String),
+          article_id: expect.any(Number),
+          author: expect.any(String),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
         });
       });
   });

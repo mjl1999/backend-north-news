@@ -52,3 +52,12 @@ exports.retrieveArticleComments = async (article_id) => {
   const comments = await db.query(query, [article_id]);
   return comments.rows;
 };
+
+exports.postComment = async (article_id, username, body) => {
+  await this.retrieveArticle(article_id);
+  const query = `INSERT INTO comments (article_id, author, body, created_at)
+  VALUES ($1, $2, $3, NOW()) 
+  RETURNING *;`
+  const newComment = await db.query(query, [article_id, username, body])
+  return newComment.rows[0]
+};

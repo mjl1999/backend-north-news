@@ -5,8 +5,14 @@ const {
   customErrorHandler,
   serverErrorHandler
 } = require("./error");
-const { getApi, getApiTopics, getArticle, getArticles, getArticleComments} = require("./controllers/api.controller");
-
+const { 
+  getApi, 
+  getApiTopics, 
+  getArticle, 
+  getArticles, 
+  getArticleComments,
+  postArticleComment} = require("./controllers/api.controller");
+app.use(express.json())
 app.get("/api", getApi);
 
 app.get("/api/topics", getApiTopics);
@@ -17,6 +23,8 @@ app.get("/api/articles/:article_id", getArticle);
 app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id/comments", getArticleComments);
+
+app.post("/api/articles/:article_id/comments", postArticleComment);
 
 // error handling below
 app.all("/*", (req, res) => {
