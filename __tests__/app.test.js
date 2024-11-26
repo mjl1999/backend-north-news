@@ -1,18 +1,18 @@
 const endpointsJson = require("../endpoints.json");
 const request = require("supertest");
-const app = require("../app")
+const app = require("../app");
 /* Set up your test imports here */
 const db = require("../db/seeds/seed"); // the file we use seed to enter data into the database
 const data = require("../db/data/test-data"); // the initial test data to reseed our file with
 const dbConnection = require("../db/connection");
-require("jest-sorted")
+require("jest-sorted");
 
 afterAll(() => {
   return dbConnection.end();
 });
 
 beforeEach(() => {
-    return db(data);
+  return db(data);
 });
 /* Set up your beforeEach & afterAll functions here */
 
@@ -27,7 +27,6 @@ describe("GET /api", () => {
   });
 });
 
-
 describe("GET /api/topics", () => {
   test("gives status of 200 and responds with an object of topics", () => {
     return request(app)
@@ -35,18 +34,15 @@ describe("GET /api/topics", () => {
       .expect(200)
       .then(({ body: { allTopics } }) => {
         allTopics.forEach((topic) => {
-					expect(Object.keys(topic)).toHaveLength(2);
-					expect(topic).toMatchObject({
-						slug: expect.any(String),
-						description: expect.any(String),
-					});
-				});
-        
+          expect(Object.keys(topic)).toHaveLength(2);
+          expect(topic).toMatchObject({
+            slug: expect.any(String),
+            description: expect.any(String),
+          });
+        });
       });
   });
 });
-
-
 
 describe("GET /api/articles/:article_id", () => {
   test("gives status of 200 and responds with the appropriate article", () => {
@@ -55,23 +51,19 @@ describe("GET /api/articles/:article_id", () => {
       .expect(200)
       .then(({ body: { chosenArticle } }) => {
         expect(Object.keys(chosenArticle)).toHaveLength(8);
-        expect(chosenArticle).toMatchObject(
-          { 
-            article_id: expect.any(Number),
-            title: expect.any(String),
-            topic: expect.any(String),
-            author: expect.any(String),
-            body: expect.any(String),
-            created_at: expect.any(String),
-            votes: expect.any(Number),
-            article_img_url: expect.any(String),
-          }
-        )
-        
+        expect(chosenArticle).toMatchObject({
+          article_id: expect.any(Number),
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+        });
       });
   });
 });
-
 
 describe("GET /api/articles", () => {
   test("gives status of 200 and responds with all articles", () => {
@@ -80,9 +72,9 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body: { allArticles } }) => {
         allArticles.forEach((article) => {
-					expect(Object.keys(article)).toHaveLength(8);
-					expect(article).toMatchObject({
-						article_id: expect.any(Number),
+          expect(Object.keys(article)).toHaveLength(8);
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
             title: expect.any(String),
             topic: expect.any(String),
             author: expect.any(String),
@@ -90,12 +82,35 @@ describe("GET /api/articles", () => {
             votes: expect.any(Number),
             article_img_url: expect.any(String),
             comment_count: expect.any(Number),
-					});
-				});
-        
-        
-        expect(allArticles).toBeSortedBy('created_at', { descending: true });
+          });
+        });
+
+        expect(allArticles).toBeSortedBy("created_at", { descending: true });
       });
   });
 });
 
+describe("/api/articles/:article_id/comments", () => {
+  test("Responds with an array of comments for the given article_id", () => {
+    return request(app)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then(({ body: { allArticleComments } }) => {
+        console.log(allArticleComments)
+        allArticleComments.forEach((comment) => {
+          expect(Object.keys(comment)).toHaveLength(6);
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: expect.any(Number),
+          });
+        });
+        expect(allArticleComments).toBeSortedBy("created_at", {
+          descending: true,
+        });
+      });
+  });
+});
