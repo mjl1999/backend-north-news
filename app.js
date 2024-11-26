@@ -3,9 +3,9 @@ const app = express();
 const {
   postgresErrorHandler,
   customErrorHandler,
-  serverErrorHandler,
+  serverErrorHandler
 } = require("./error");
-const { getApi, getApiTopics, getArticle, getArticles} = require("./controllers/api.controller");
+const { getApi, getApiTopics, getArticle, getArticles, getArticleComments} = require("./controllers/api.controller");
 
 app.get("/api", getApi);
 
@@ -16,6 +16,7 @@ app.get("/api/articles/:article_id", getArticle);
 
 app.get("/api/articles", getArticles);
 
+app.get("/api/articles/:article_id/comments", getArticleComments);
 
 // error handling below
 app.all("/*", (req, res) => {
