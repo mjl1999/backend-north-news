@@ -74,8 +74,8 @@ exports.patchArticle = async (article_id, inc_votes) => {
 
   const updatedArticle = await db.query(query, [inc_votes, article_id])
   return updatedArticle.rows[0]
-
 }
+
 
 
 exports.removeComment = async (comment_id) => {
