@@ -23,18 +23,31 @@ exports.retrieveArticle = async (id) => {
   }
 };
 
-exports.retrieveAllArticles = async (sort_by='created_at', order='DESC') => {
-  const dataColumns = ["article_id","title","topic","author", "created_at", "votes", "article_img_url"]
+exports.retrieveAllArticles = async (
+  sort_by = "created_at",
+  order = "DESC",
+  topic
+) => {
+  const dataColumns = [
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "created_at",
+    "votes",
+    "article_img_url",
+  ];
+  const topicColumns = ["mitch", "paper", "cats"];
 
   if (!dataColumns.includes(sort_by)) {
-    return Promise.reject({status: 404, msg: "sort_by Not Found"})
+    return Promise.reject({ status: 404, msg: "sort_by Not Found" });
   }
   if (order.toUpperCase() !== "DESC" && order.toUpperCase() !== "ASC") {
-    return Promise.reject({status: 404, msg: "order Not Found"})
+    return Promise.reject({ status: 404, msg: "order Not Found" });
   }
-  console.log("we made it passed the errors")
+  
   //count functionality https://database.guide/sql-count-for-beginners/
-  const query = `
+  let query = `
     SELECT
     articles.article_id,
     articles.title,
@@ -43,9 +56,8 @@ exports.retrieveAllArticles = async (sort_by='created_at', order='DESC') => {
     articles.created_at,
     articles.votes,
     articles.article_img_url,
-    COUNT(comment_id) AS comment_count
-    FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id
-    GROUP BY articles.article_id
+    COUNT(comment_id) AS comment_count 
+    FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id
     ORDER BY articles.${sort_by} ${order.toUpperCase()};`;
 
   const articles = await db.query(query);
@@ -66,13 +78,12 @@ exports.postComment = async (article_id, username, body) => {
   await this.retrieveArticle(article_id);
   const query = `INSERT INTO comments (article_id, author, body, created_at)
   VALUES ($1, $2, $3, NOW()) 
-  RETURNING *;`
+  RETURNING *;`;
 
-  const newComment = await db.query(query, [article_id, username, body])
+  const newComment = await db.query(query, [article_id, username, body]);
 
-  return newComment.rows[0]
+  return newComment.rows[0];
 };
-
 
 exports.patchArticle = async (article_id, inc_votes) => {
   await this.retrieveArticle(article_id);
@@ -81,34 +92,26 @@ exports.patchArticle = async (article_id, inc_votes) => {
   SET votes = votes + $1 
   WHERE article_id = $2 RETURNING *;`;
 
-  const updatedArticle = await db.query(query, [inc_votes, article_id])
-  return updatedArticle.rows[0]
-
-}
-
-
+  const updatedArticle = await db.query(query, [inc_votes, article_id]);
+  return updatedArticle.rows[0];
+};
 
 exports.removeComment = async (comment_id) => {
   if (!Number.isInteger(Number(comment_id))) {
-    return Promise.reject({status: 400, msg: "Bad request"})
+    return Promise.reject({ status: 400, msg: "Bad request" });
   }
-  const query = `DELETE FROM comments WHERE comment_id = $1 RETURNING *;`
-  const deletedComment = await db.query(query, [comment_id])
- 
+  const query = `DELETE FROM comments WHERE comment_id = $1 RETURNING *;`;
+  const deletedComment = await db.query(query, [comment_id]);
+
   if (deletedComment.rows.length === 0) {
-    return Promise.reject({status: 404, msg: "Comment Id not found"})
-  } 
+    return Promise.reject({ status: 404, msg: "Comment Id not found" });
+  }
 
-  return true
-
-
-}
-
-
-
+  return true;
+};
 
 exports.retrieveAllUsers = async () => {
-  const query = `SELECT * FROM users;`
+  const query = `SELECT * FROM users;`;
   const users = await db.query(query);
   return users.rows;
 };
