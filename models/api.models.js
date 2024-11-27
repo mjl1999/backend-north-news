@@ -8,7 +8,8 @@ exports.retrieveTopics = async () => {
 
 exports.retrieveArticle = async (id) => {
   if (Number.isInteger(Number(id))) {
-    const query = "SELECT * FROM articles WHERE article_id = $1;";
+    console.log("we have arrived")
+    const query = `SELECT * FROM articles WHERE article_id = $1;`;
     const result = await db.query(query, [id]);
     if (result.rows.length > 0) {
       return result.rows[0];
