@@ -40,7 +40,8 @@ exports.getArticle = async (req, res, next) => {
 
 exports.getArticles = async (req, res, next) => {
   try {
-    const articles = await retrieveAllArticles();
+    const {sort_by, order} = req.query
+    const articles = await retrieveAllArticles(sort_by, order);
     res.status(200).send({ allArticles: articles });
   } catch (err) {
     next(err);

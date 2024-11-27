@@ -14,7 +14,6 @@ afterAll(() => {
 beforeEach(() => {
   return db(data);
 });
-/* Set up your beforeEach & afterAll functions here */
 
 describe("GET /api", () => {
   test("200: Responds with an object detailing the documentation for each endpoint", () => {
@@ -179,8 +178,6 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
-
-
 describe("GET /api/users", () => {
   test("gives status of 200 and responds with all users", () => {
     return request(app)
@@ -189,7 +186,7 @@ describe("GET /api/users", () => {
       .then(({ body: { allUsers } }) => {
         allUsers.forEach((user) => {
           expect(Object.keys(user)).toHaveLength(3);
-          console.log(user)
+          //console.log(user)
           expect(user).toMatchObject({
             username: expect.any(String),
             name: expect.any(String),
@@ -198,5 +195,49 @@ describe("GET /api/users", () => {
         });
 
       });
+  });
+});
+
+describe("GET /api/articles?sort_by=votes&order=asc", () => {
+  test("gives status of 200 and responds with all articles sorted by votes and ordered by ascending", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes&order=asc")
+      .expect(200)
+      .then(({ body: { allArticles } }) => {
+        console.log(allArticles)
+        allArticles.forEach((article) => {
+          expect(Object.keys(article)).toHaveLength(8);
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+        });
+
+        expect(allArticles).toBeSortedBy("votes", { ascending: true });
+      });
+  });
+
+  test("gives status of 400 and responds with bad request when passed nonsensical sort_by", () => {
+    return request(app)
+      .get("/api/articles?sort_by=DROPTABLE&order=asc")
+      .expect(404).then(({body: {msg}})=> {
+        expect(msg).toBe('sort_by Not Found')
+       
+      })
+  });
+
+  test("gives status of 400 and responds with bad request when passed nonsensical sort_by", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes&order=DROPTABLE")
+      .expect(404).then(({body: {msg}})=> {
+        expect(msg).toBe('order Not Found')
+       
+      })
   });
 });

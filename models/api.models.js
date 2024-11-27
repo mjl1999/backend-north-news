@@ -23,7 +23,16 @@ exports.retrieveArticle = async (id) => {
   }
 };
 
-exports.retrieveAllArticles = async () => {
+exports.retrieveAllArticles = async (sort_by='created_at', order='DESC') => {
+  const dataColumns = ["article_id","title","topic","author", "created_at", "votes", "article_img_url"]
+
+  if (!dataColumns.includes(sort_by)) {
+    return Promise.reject({status: 404, msg: "sort_by Not Found"})
+  }
+  if (order.toUpperCase() !== "DESC" && order.toUpperCase() !== "ASC") {
+    return Promise.reject({status: 404, msg: "order Not Found"})
+  }
+  console.log("we made it passed the errors")
   //count functionality https://database.guide/sql-count-for-beginners/
   const query = `
     SELECT
@@ -37,7 +46,7 @@ exports.retrieveAllArticles = async () => {
     COUNT(comment_id) AS comment_count
     FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id
     GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC;`;
+    ORDER BY articles.${sort_by} ${order.toUpperCase()};`;
 
   const articles = await db.query(query);
   articles.rows.forEach((obj) => {
