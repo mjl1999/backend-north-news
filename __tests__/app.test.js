@@ -204,7 +204,6 @@ describe("GET /api/articles?sort_by=votes&order=asc", () => {
       .get("/api/articles?sort_by=votes&order=asc")
       .expect(200)
       .then(({ body: { allArticles } }) => {
-        console.log(allArticles)
         allArticles.forEach((article) => {
           expect(Object.keys(article)).toHaveLength(8);
           expect(article).toMatchObject({
@@ -223,7 +222,7 @@ describe("GET /api/articles?sort_by=votes&order=asc", () => {
       });
   });
 
-  test("gives status of 400 and responds with bad request when passed nonsensical sort_by", () => {
+  test("gives status of 400 and responds with bad request when passed invalid sort_by", () => {
     return request(app)
       .get("/api/articles?sort_by=DROPTABLE&order=asc")
       .expect(404).then(({body: {msg}})=> {
@@ -232,7 +231,7 @@ describe("GET /api/articles?sort_by=votes&order=asc", () => {
       })
   });
 
-  test("gives status of 400 and responds with bad request when passed nonsensical sort_by", () => {
+  test("gives status of 400 and responds with bad request when passed invalid order", () => {
     return request(app)
       .get("/api/articles?sort_by=votes&order=DROPTABLE")
       .expect(404).then(({body: {msg}})=> {
