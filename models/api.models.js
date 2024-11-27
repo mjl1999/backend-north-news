@@ -102,6 +102,13 @@ exports.retrieveArticleComments = async (article_id) => {
 };
 
 exports.postComment = async (article_id, username, body) => {
+  if (!username || !body) {
+    return Promise.reject({status: 400, msg: "Incomplete request body: make sure username and comment body are present"})
+  }
+  const checkUsername = await db.query(`SELECT * FROM users WHERE username = $1`, [username])
+  if (checkUsername.rows.length === 0) {
+    return Promise.reject({status: 400, msg: "User does not exist"})
+  }
   await this.retrieveArticle(article_id);
   const query = `INSERT INTO comments (article_id, author, body, created_at)
   VALUES ($1, $2, $3, NOW()) 

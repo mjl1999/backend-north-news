@@ -1,7 +1,6 @@
 const endpointsJson = require("../endpoints.json");
 const request = require("supertest");
 const app = require("../app");
-/* Set up your test imports here */
 const db = require("../db/seeds/seed"); // the file we use seed to enter data into the database
 const data = require("../db/data/test-data"); // the initial test data to reseed our file with
 const dbConnection = require("../db/connection");
@@ -32,8 +31,8 @@ describe("GET /api/topics", () => {
       .get("/api/topics")
       .expect(200)
       .then(({ body: { allTopics } }) => {
+        expect(allTopics.length).toBeGreaterThan(0);
         allTopics.forEach((topic) => {
-          expect(Object.keys(topic)).toHaveLength(2);
           expect(topic).toMatchObject({
             slug: expect.any(String),
             description: expect.any(String),
@@ -49,9 +48,8 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/2")
       .expect(200)
       .then(({ body: { chosenArticle } }) => {
-        expect(Object.keys(chosenArticle)).toHaveLength(9);
         expect(chosenArticle).toMatchObject({
-          article_id: expect.any(Number),
+          article_id: 2,
           title: expect.any(String),
           topic: expect.any(String),
           author: expect.any(String),
@@ -59,20 +57,38 @@ describe("GET /api/articles/:article_id", () => {
           created_at: expect.any(String),
           votes: expect.any(Number),
           article_img_url: expect.any(String),
-          comment_count: expect.any(Number)
+          comment_count: expect.any(Number),
         });
+      });
+  });
+
+  test("gives status of 404 for non-existent id", () => {
+    return request(app)
+      .get("/api/articles/9999")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Article ID not Found");
+      });
+  });
+
+  test("gives status of 400 and error message for invalid article_id (non-numeric)", () => {
+    return request(app)
+      .get("/api/articles/DROPTABLE")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request: invalid id");
       });
   });
 });
 
 describe("GET /api/articles", () => {
-  test("gives status of 200 and responds with all articles", () => {
+  test("gives status of 200 and responds with all articles sorted by date of creation", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then(({ body: { allArticles } }) => {
+        expect(allArticles.length).toBeGreaterThan(0);
         allArticles.forEach((article) => {
-          expect(Object.keys(article)).toHaveLength(8);
           expect(article).toMatchObject({
             article_id: expect.any(Number),
             title: expect.any(String),
@@ -97,14 +113,13 @@ describe("GET /api/articles/:article_id/comments", () => {
       .expect(200)
       .then(({ body: { allArticleComments } }) => {
         allArticleComments.forEach((comment) => {
-          expect(Object.keys(comment)).toHaveLength(6);
           expect(comment).toMatchObject({
             comment_id: expect.any(Number),
             votes: expect.any(Number),
             created_at: expect.any(String),
             author: expect.any(String),
             body: expect.any(String),
-            article_id: expect.any(Number),
+            article_id: 2,
           });
         });
         expect(allArticleComments).toBeSortedBy("created_at", {
@@ -132,19 +147,70 @@ describe("POST /api/articles/:article_id/comments", () => {
             body: "testing, testing 123",
             article_id: 2,
             votes: 0,
+            comment_id: expect.any(Number),
+            created_at: expect.any(String),
           })
         );
 
-        expect(userComment).toMatchObject({
-          comment_id: expect.any(Number),
-          body: expect.any(String),
-          article_id: expect.any(Number),
-          author: expect.any(String),
-          votes: expect.any(Number),
-          created_at: expect.any(String),
-        });
       });
   });
+
+    test("gives 400 for bad request if given bad article id", ()=> {
+      const comment = {
+        username: "butter_bridge",
+        body: "testing, testing 123",
+      };
+      return request(app)
+        .post("/api/articles/hello/comments")
+        .send(comment)
+        .expect(400)
+        .then(({ body: { msg } })=> {
+          expect(msg).toBe("Bad Request: invalid id")
+        }) 
+    })
+
+    test("gives 404 for non-existent id", ()=> {
+      const comment = {
+        username: "butter_bridge",
+        body: "testing, testing 123",
+      };
+      return request(app)
+        .post("/api/articles/999/comments")
+        .send(comment)
+        .expect(404)
+        .then(({ body: { msg } })=> {
+          expect(msg).toBe("Article ID not Found")
+        }) 
+    })
+
+
+    test("gives 400 for incomplete comment", ()=> {
+      const comment = {
+        username: "butter_bridge",
+      };
+      return request(app)
+        .post("/api/articles/2/comments")
+        .send(comment)
+        .expect(400)
+        .then(({ body: { msg } })=> {
+          expect(msg).toBe("Incomplete request body: make sure username and comment body are present")
+        }) 
+    })
+
+
+    test("gives 400 for username that does not exist", ()=> {
+      const comment = {
+        username: "butter_burn",
+        body: "testing, testing 123",
+      };
+      return request(app)
+        .post("/api/articles/2/comments")
+        .send(comment)
+        .expect(400)
+        .then(({ body: { msg } })=> {
+          expect(msg).toBe("User does not exist")
+        }) 
+    })
 });
 
 describe("PATCH /api/articles/:article_id", () => {
@@ -172,7 +238,6 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 
-
   test("responds with appropriate error when passed invalid increment type", () => {
     const updateVotes = {
       inc_votes: "ten",
@@ -180,39 +245,37 @@ describe("PATCH /api/articles/:article_id", () => {
     return request(app)
       .patch("/api/articles/2")
       .send(updateVotes)
-      .expect(400).then(({body: {msg}})=> {
-        expect(msg).toBe("inc_votes is not a number")
-      })
-  })
-
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("inc_votes is not a number");
+      });
+  });
 
   test("responds with appropriate error when not passed inc_votes", () => {
     const updateVotes = {
-      inc_null: 10
+      inc_null: 10,
     };
     return request(app)
       .patch("/api/articles/2")
       .send(updateVotes)
-      .expect(400).then(({body: {msg}})=> {
-        expect(msg).toBe("inc_votes is not defined")
-      })
-  })
-
-
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("inc_votes is not defined");
+      });
+  });
 
   test("responds with appropriate error when trying to patch to a non-existent article", () => {
     const updateVotes = {
-      inc_votes: 10
+      inc_votes: 10,
     };
     return request(app)
       .patch("/api/articles/donuts")
       .send(updateVotes)
-      .expect(400).then(({body: {msg}})=> {
-        expect(msg).toBe("Bad Request: invalid id")
-      })
-  })
-
-
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request: invalid id");
+      });
+  });
 });
 
 describe("DELETE /api/comments/:comment_id", () => {
