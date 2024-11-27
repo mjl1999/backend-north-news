@@ -16,7 +16,8 @@ exports.retrieveArticle = async (id) => {
     const error = new Error("Article ID not Found");
     error.status = 404;
     throw error;
-  } else {
+  } 
+  else {
     const error = new Error("Bad request: invalid id");
     error.status = 400;
     throw error;
@@ -50,9 +51,6 @@ exports.retrieveAllArticles = async (
     return Promise.reject({ status: 404, msg: "topic Not Found" });
   }
   
-
-
-
   //count functionality https://database.guide/sql-count-for-beginners/
   let query = `
     SELECT
