@@ -61,7 +61,6 @@ exports.retrieveAllArticles = async (
     return Promise.reject({ status: 404, msg: "topic Not Found" });
   }
 
-  //count functionality https://database.guide/sql-count-for-beginners/
   let query = `
     SELECT
     articles.article_id,
