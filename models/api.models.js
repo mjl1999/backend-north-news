@@ -8,11 +8,25 @@ exports.retrieveTopics = async () => {
 
 exports.retrieveArticle = async (id) => {
   if (Number.isInteger(Number(id))) {
-    console.log("we have arrived")
-    const query = `SELECT * FROM articles WHERE article_id = $1;`;
+    const query = `
+    SELECT
+    articles.article_id,
+    articles.title,
+    articles.topic,
+    articles.body,
+    articles.author,
+    articles.created_at,
+    articles.votes,
+    articles.article_img_url,
+    COUNT(comment_id) AS comment_count 
+    FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id 
+    WHERE articles.article_id = $1
+    GROUP BY articles.article_id;`;
     const result = await db.query(query, [id]);
     if (result.rows.length > 0) {
-      return result.rows[0];
+      const article = result.rows[0]
+      article["comment_count"] = Number(article["comment_count"])
+      return article;
     }
     return Promise.reject({status: 404, msg: "Article ID not Found"})
   } 

@@ -44,12 +44,12 @@ describe("GET /api/topics", () => {
 });
 
 describe("GET /api/articles/:article_id", () => {
-  test("gives status of 200 and responds with the appropriate article", () => {
+  test("gives status of 200 and responds with the appropriate article with comment count", () => {
     return request(app)
       .get("/api/articles/2")
       .expect(200)
       .then(({ body: { chosenArticle } }) => {
-        expect(Object.keys(chosenArticle)).toHaveLength(8);
+        expect(Object.keys(chosenArticle)).toHaveLength(9);
         expect(chosenArticle).toMatchObject({
           article_id: expect.any(Number),
           title: expect.any(String),
@@ -59,6 +59,7 @@ describe("GET /api/articles/:article_id", () => {
           created_at: expect.any(String),
           votes: expect.any(Number),
           article_img_url: expect.any(String),
+          comment_count: expect.any(Number)
         });
       });
   });
