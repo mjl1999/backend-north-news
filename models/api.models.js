@@ -51,10 +51,10 @@ exports.retrieveAllArticles = async (
   const topicColumns = ["mitch", "paper", "cats"];
 
   if (!dataColumns.includes(sort_by)) {
-    return Promise.reject({ status: 404, msg: "sort_by Not Found" });
+    return Promise.reject({ status: 400, msg: "Invalid sort_by column" });
   }
   if (order.toUpperCase() !== "DESC" && order.toUpperCase() !== "ASC") {
-    return Promise.reject({ status: 404, msg: "order Not Found" });
+    return Promise.reject({ status: 400, msg: "Invalid order value" });
   }
 
   if (topic && !topicColumns.includes(topic)) {
@@ -138,16 +138,16 @@ exports.patchArticle = async (article_id, inc_votes) => {
 
 exports.removeComment = async (comment_id) => {
   if (!Number.isInteger(Number(comment_id))) {
-    return Promise.reject({ status: 400, msg: "Bad request" });
+    return Promise.reject({ status: 400, msg: "Bad Request: invalid comment id" });
   }
   const query = `DELETE FROM comments WHERE comment_id = $1 RETURNING *;`;
   const deletedComment = await db.query(query, [comment_id]);
 
   if (deletedComment.rows.length === 0) {
-    return Promise.reject({ status: 404, msg: "Comment Id not found" });
+    return Promise.reject({ status: 404, msg: "Comment Id Not Found" });
   }
 
-  return true;
+  return;
 };
 
 exports.retrieveAllUsers = async () => {

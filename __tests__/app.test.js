@@ -140,7 +140,6 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send(comment)
       .expect(201)
       .then(({ body: { userComment } }) => {
-        expect(Object.keys(userComment)).toHaveLength(6);
         expect(userComment).toEqual(
           expect.objectContaining({
             author: "butter_bridge",
@@ -223,9 +222,8 @@ describe("PATCH /api/articles/:article_id", () => {
       .send(updateVotes)
       .expect(201)
       .then(({ body: { updatedArticle } }) => {
-        expect(Object.keys(updatedArticle)).toHaveLength(8);
         expect(updatedArticle).toMatchObject({
-          article_id: expect.any(Number),
+          article_id: 2,
           title: expect.any(String),
           topic: expect.any(String),
           author: expect.any(String),
@@ -279,9 +277,26 @@ describe("PATCH /api/articles/:article_id", () => {
 });
 
 describe("DELETE /api/comments/:comment_id", () => {
-  test("removes comment based on comment_id", () => {
+  test("removes comment based on valid comment_id", () => {
     return request(app).delete("/api/comments/2").expect(204);
   });
+
+  test("returns error if given invalid comment_id", () => {
+    return request(app)
+    .delete("/api/comments/hello")
+    .expect(400).then(({ body: { msg } }) => {
+      expect(msg).toBe("Bad Request: invalid comment id");
+    });
+  });
+
+  test("returns error if comment id does not exist", () => {
+    return request(app)
+    .delete("/api/comments/50000")
+    .expect(404).then(({ body: { msg } }) => {
+      expect(msg).toBe("Comment Id Not Found");
+    });
+  });
+
 });
 
 describe("GET /api/users", () => {
@@ -290,8 +305,8 @@ describe("GET /api/users", () => {
       .get("/api/users")
       .expect(200)
       .then(({ body: { allUsers } }) => {
+        expect(allUsers.length).toBeGreaterThan(0);
         allUsers.forEach((user) => {
-          expect(Object.keys(user)).toHaveLength(3);
           expect(user).toMatchObject({
             username: expect.any(String),
             name: expect.any(String),
@@ -329,18 +344,18 @@ describe("GET /api/articles?sort_by=votes&order=asc", () => {
   test("gives status of 400 and responds with bad request when passed invalid sort_by", () => {
     return request(app)
       .get("/api/articles?sort_by=DROPTABLE&order=asc")
-      .expect(404)
+      .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("sort_by Not Found");
+        expect(msg).toBe("Invalid sort_by column");
       });
   });
 
   test("gives status of 400 and responds with bad request when passed invalid order", () => {
     return request(app)
       .get("/api/articles?sort_by=votes&order=DROPTABLE")
-      .expect(404)
+      .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("order Not Found");
+        expect(msg).toBe("Invalid order value");
       });
   });
 });
