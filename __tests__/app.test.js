@@ -186,7 +186,6 @@ describe("GET /api/users", () => {
       .then(({ body: { allUsers } }) => {
         allUsers.forEach((user) => {
           expect(Object.keys(user)).toHaveLength(3);
-          //console.log(user)
           expect(user).toMatchObject({
             username: expect.any(String),
             name: expect.any(String),
