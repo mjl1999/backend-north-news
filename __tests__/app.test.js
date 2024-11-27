@@ -193,7 +193,6 @@ describe("GET /api/users", () => {
             avatar_url: expect.any(String),
           });
         });
-
       });
   });
 });
@@ -225,18 +224,52 @@ describe("GET /api/articles?sort_by=votes&order=asc", () => {
   test("gives status of 400 and responds with bad request when passed invalid sort_by", () => {
     return request(app)
       .get("/api/articles?sort_by=DROPTABLE&order=asc")
-      .expect(404).then(({body: {msg}})=> {
-        expect(msg).toBe('sort_by Not Found')
-       
-      })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("sort_by Not Found");
+      });
   });
 
   test("gives status of 400 and responds with bad request when passed invalid order", () => {
     return request(app)
       .get("/api/articles?sort_by=votes&order=DROPTABLE")
-      .expect(404).then(({body: {msg}})=> {
-        expect(msg).toBe('order Not Found')
-       
-      })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("order Not Found");
+      });
+  });
+});
+
+describe("GET /api/articles?topic=mitch&order=asc", () => {
+  test("gives status of 200 and responds with all articles belonging to specific topic", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&order=asc")
+      .expect(200)
+      .then(({ body: { allArticles } }) => {
+        allArticles.forEach((article) => {
+          expect(Object.keys(article)).toHaveLength(8);
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+        });
+
+        expect(allArticles).toBeSortedBy("topic", { ascending: true });
+      });
+  });
+
+  test("gives status of 400 and responds with bad request when passed invalid topic", () => {
+    return request(app)
+      .get("/api/articles?topic=DROPTABLE&order=asc")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("topic Not Found");
+      });
   });
 });

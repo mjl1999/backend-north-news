@@ -46,6 +46,13 @@ exports.retrieveAllArticles = async (
     return Promise.reject({ status: 404, msg: "order Not Found" });
   }
   
+  if (topic && !topicColumns.includes(topic)) {
+    return Promise.reject({ status: 404, msg: "topic Not Found" });
+  }
+  
+
+
+
   //count functionality https://database.guide/sql-count-for-beginners/
   let query = `
     SELECT
@@ -57,14 +64,29 @@ exports.retrieveAllArticles = async (
     articles.votes,
     articles.article_img_url,
     COUNT(comment_id) AS comment_count 
-    FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id
-    ORDER BY articles.${sort_by} ${order.toUpperCase()};`;
-
-  const articles = await db.query(query);
-  articles.rows.forEach((obj) => {
-    obj["comment_count"] = Number(obj["comment_count"]);
-  });
-  return articles.rows;
+    FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `
+  
+  if (topic) {
+      query += `WHERE topic = $1 `;
+    }
+  query += `GROUP BY articles.article_id ORDER BY articles.${sort_by} ${order.toUpperCase()};`;
+  
+  if (!topic) {
+    const articles = await db.query(query);
+    articles.rows.forEach((obj) => {
+      obj["comment_count"] = Number(obj["comment_count"]);
+    });
+    return articles.rows;
+  }  
+  else {
+    const articles = await db.query(query, [topic]);
+    articles.rows.forEach((obj) => {
+      obj["comment_count"] = Number(obj["comment_count"]);
+    });
+    return articles.rows;
+  }
+  
+  
 };
 
 exports.retrieveArticleComments = async (article_id) => {
