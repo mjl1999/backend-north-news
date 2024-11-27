@@ -170,6 +170,48 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(updatedArticle.votes >= 100).toBe(true);
       });
   });
+
+
+  test("responds with appropriate error when passed invalid increment type", () => {
+    const updateVotes = {
+      inc_votes: "ten",
+    };
+    return request(app)
+      .patch("/api/articles/2")
+      .send(updateVotes)
+      .expect(400).then(({body: {msg}})=> {
+        expect(msg).toBe("inc_votes is not a number")
+      })
+  })
+
+
+  test("responds with appropriate error when not passed inc_votes", () => {
+    const updateVotes = {
+      inc_null: 10
+    };
+    return request(app)
+      .patch("/api/articles/2")
+      .send(updateVotes)
+      .expect(400).then(({body: {msg}})=> {
+        expect(msg).toBe("inc_votes is not defined")
+      })
+  })
+
+
+
+  test("responds with appropriate error when trying to patch to a non-existent article", () => {
+    const updateVotes = {
+      inc_votes: 10
+    };
+    return request(app)
+      .patch("/api/articles/donuts")
+      .send(updateVotes)
+      .expect(400).then(({body: {msg}})=> {
+        expect(msg).toBe("Bad Request: invalid id")
+      })
+  })
+
+
 });
 
 describe("DELETE /api/comments/:comment_id", () => {

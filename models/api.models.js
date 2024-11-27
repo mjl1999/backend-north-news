@@ -13,14 +13,10 @@ exports.retrieveArticle = async (id) => {
     if (result.rows.length > 0) {
       return result.rows[0];
     }
-    const error = new Error("Article ID not Found");
-    error.status = 404;
-    throw error;
+    return Promise.reject({status: 404, msg: "Article ID not Found"})
   } 
   else {
-    const error = new Error("Bad request: invalid id");
-    error.status = 400;
-    throw error;
+    return Promise.reject({status: 400, msg: "Bad Request: invalid id"})
   }
 };
 
@@ -107,6 +103,12 @@ exports.postComment = async (article_id, username, body) => {
 
 exports.patchArticle = async (article_id, inc_votes) => {
   await this.retrieveArticle(article_id);
+  if (!inc_votes) {
+    return Promise.reject({ status: 400, msg: "inc_votes is not defined" });
+  }
+  if (!Number.isInteger(Number(inc_votes))) {
+    return Promise.reject({ status: 400, msg: "inc_votes is not a number" });
+  }
   const query = `
   UPDATE articles 
   SET votes = votes + $1 
