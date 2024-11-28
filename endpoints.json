@@ -25,7 +25,98 @@
         }
       ]
     }
+  },
+
+  "GET /api/articles/:article_id": {
+    "description": "returns individual article",
+    "parameters": ["article_id"],
+    "exampleResponse": {
+      "articles": [
+        {
+          "title": "Seafood substitutions are increasing",
+          "topic": "cooking",
+          "author": "weegembump",
+          "body": "Text from the article..",
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "votes": 0,
+          "comment_count": 6
+        }
+      ]
+    }
+  },
+
+  "GET /api/articles/:article_id/comments": {
+    "description": "returns comments for a specific article",
+    "parameters": ["article_id"],
+    "exampleResponse": {
+      "comments": [
+        {
+          "article_id": 1,
+          "comment_id": 2,
+          "votes": 2,
+          "author": "weegembump",
+          "body": "Text from the article..",
+          "created_at": "2018-05-30T15:59:13.341Z"
+        }
+      ]
+    }
+  },
+
+
+  "GET /api/users": {
+    "description": "returns comments for a specific article",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "Burgers88",
+          "name": "Matt",
+          "avatar_url": "..."
+        }
+      ]
+    }
+  },
+
+  "POST /api/articles/:article_id/comments": {
+    "description": "posts a comment on a specific article",
+    "parameters": ["article_id"],
+    "exampleResponse": {
+      "comments": [
+        {
+          "author": "Burgers88",
+          "body": "Hello",
+          "article_id": 1,
+          "votes": 2,
+          "comment_id": 2,
+          "created_at": "2020-04-05"
+        }
+      ]
+    }
+  },
+
+  "PATCH /api/articles/:article_id": {
+    "description": "updates votes on an article",
+    "parameters": ["article_id"],
+    "exampleResponse": {
+      "updateVotes": [
+        {
+          "inc_votes": 100
+        }
+      ]
+    }
+  },
+
+
+  "DELETE /api/articles/:article_id": {
+    "description": "deletes a specified article",
+    "parameters": ["article_id"],
+    "exampleResponse": {
+      
+    }
   }
+
+
+  
 
   
 }
