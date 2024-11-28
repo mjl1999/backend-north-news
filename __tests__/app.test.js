@@ -150,66 +150,65 @@ describe("POST /api/articles/:article_id/comments", () => {
             created_at: expect.any(String),
           })
         );
-
       });
   });
 
-    test("gives 400 for bad request if given bad article id", ()=> {
-      const comment = {
-        username: "butter_bridge",
-        body: "testing, testing 123",
-      };
-      return request(app)
-        .post("/api/articles/hello/comments")
-        .send(comment)
-        .expect(400)
-        .then(({ body: { msg } })=> {
-          expect(msg).toBe("Bad Request: invalid id")
-        }) 
-    })
+  test("gives 400 for bad request if given bad article id", () => {
+    const comment = {
+      username: "butter_bridge",
+      body: "testing, testing 123",
+    };
+    return request(app)
+      .post("/api/articles/hello/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request: invalid id");
+      });
+  });
 
-    test("gives 404 for non-existent id", ()=> {
-      const comment = {
-        username: "butter_bridge",
-        body: "testing, testing 123",
-      };
-      return request(app)
-        .post("/api/articles/999/comments")
-        .send(comment)
-        .expect(404)
-        .then(({ body: { msg } })=> {
-          expect(msg).toBe("Article ID not Found")
-        }) 
-    })
+  test("gives 404 for non-existent id", () => {
+    const comment = {
+      username: "butter_bridge",
+      body: "testing, testing 123",
+    };
+    return request(app)
+      .post("/api/articles/999/comments")
+      .send(comment)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Article ID not Found");
+      });
+  });
 
+  test("gives 400 for incomplete comment", () => {
+    const comment = {
+      username: "butter_bridge",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe(
+          "Incomplete request body: make sure username and comment body are present"
+        );
+      });
+  });
 
-    test("gives 400 for incomplete comment", ()=> {
-      const comment = {
-        username: "butter_bridge",
-      };
-      return request(app)
-        .post("/api/articles/2/comments")
-        .send(comment)
-        .expect(400)
-        .then(({ body: { msg } })=> {
-          expect(msg).toBe("Incomplete request body: make sure username and comment body are present")
-        }) 
-    })
-
-
-    test("gives 400 for username that does not exist", ()=> {
-      const comment = {
-        username: "butter_burn",
-        body: "testing, testing 123",
-      };
-      return request(app)
-        .post("/api/articles/2/comments")
-        .send(comment)
-        .expect(400)
-        .then(({ body: { msg } })=> {
-          expect(msg).toBe("User does not exist")
-        }) 
-    })
+  test("gives 400 for username that does not exist", () => {
+    const comment = {
+      username: "butter_burn",
+      body: "testing, testing 123",
+    };
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(comment)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("User does not exist");
+      });
+  });
 });
 
 describe("PATCH /api/articles/:article_id", () => {
@@ -283,20 +282,21 @@ describe("DELETE /api/comments/:comment_id", () => {
 
   test("returns error if given invalid comment_id", () => {
     return request(app)
-    .delete("/api/comments/hello")
-    .expect(400).then(({ body: { msg } }) => {
-      expect(msg).toBe("Bad Request: invalid comment id");
-    });
+      .delete("/api/comments/hello")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request: invalid comment id");
+      });
   });
 
   test("returns error if comment id does not exist", () => {
     return request(app)
-    .delete("/api/comments/50000")
-    .expect(404).then(({ body: { msg } }) => {
-      expect(msg).toBe("Comment Id Not Found");
-    });
+      .delete("/api/comments/50000")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Comment Id Not Found");
+      });
   });
-
 });
 
 describe("GET /api/users", () => {
@@ -394,8 +394,6 @@ describe("GET /api/articles?topic=mitch&order=asc", () => {
   });
 });
 
-
-
 describe("GET /api/users/:username", () => {
   test("gives status of 200 and with specific user", () => {
     return request(app)
@@ -403,22 +401,96 @@ describe("GET /api/users/:username", () => {
       .expect(200)
       .then(({ body: { specifiedUser } }) => {
         expect([specifiedUser].length).toBeGreaterThan(0);
-          expect(specifiedUser).toMatchObject({
-            username: "icellusedkars",
-            name: "sam",
-            avatar_url:'https://avatars2.githubusercontent.com/u/24604688?s=460&v=4',
-          });
-       
+        expect(specifiedUser).toMatchObject({
+          username: "icellusedkars",
+          name: "sam",
+          avatar_url:
+            "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4",
+        });
       });
   });
 
-  test("", ()=> {
+  test("", () => {
     return request(app)
-    .get("/api/users/bicycletricycle")
-    .expect(404)
-    .then(({body: {msg}})=>{
-      expect(msg).toBe("User Not Found")
+      .get("/api/users/bicycletricycle")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("User Not Found");
+      });
+  });
+});
 
-    })
-  })
+describe("PATCH /api/comments/:comment_id", () => {
+  test("updates votes on a comment", () => {
+    const updateVotes = {
+      inc_votes: 100,
+    };
+    return request(app)
+      .patch("/api/comments/2")
+      .send(updateVotes)
+      .expect(201)
+      .then(({ body: { updatedComment } }) => {
+        expect(updatedComment).toMatchObject({
+          comment_id: 2,
+          article_id: expect.any(Number),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+        });
+        expect(updatedComment.votes >= 100).toBe(true);
+      });
+  });
+
+  test("responds with appropriate error when passed invalid increment type", () => {
+    const updateVotes = {
+      inc_votes: "ten",
+    };
+    return request(app)
+      .patch("/api/comments/2")
+      .send(updateVotes)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("inc_votes is not a number");
+      });
+  });
+
+  test("responds with appropriate error when not passed inc_votes", () => {
+    const updateVotes = {
+      inc_null: 10,
+    };
+    return request(app)
+      .patch("/api/comments/2")
+      .send(updateVotes)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("inc_votes is not defined");
+      });
+  });
+
+  test("responds with appropriate error when trying to patch to an invalid comment id", () => {
+    const updateVotes = {
+      inc_votes: 10,
+    };
+    return request(app)
+      .patch("/api/comments/donuts")
+      .send(updateVotes)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("invalid comment_id");
+      });
+  });
+
+  test("responds with appropriate error when trying to patch to a non-existent comment id", () => {
+    const updateVotes = {
+      inc_votes: 10,
+    };
+    return request(app)
+      .patch("/api/comments/10000")
+      .send(updateVotes)
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Comment ID Not Found");
+      });
+  });
 });

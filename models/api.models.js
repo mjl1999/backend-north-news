@@ -170,3 +170,29 @@ exports.retrieveUser = async (user) => {
 
 
 }
+
+
+exports.patchComment = async (comment_id, inc_votes) => {
+  
+  if (!inc_votes) {
+    return Promise.reject({ status: 400, msg: "inc_votes is not defined" });
+  }
+  if (!Number.isInteger(Number(inc_votes))) {
+    return Promise.reject({ status: 400, msg: "inc_votes is not a number" });
+  }
+  if (!Number.isInteger(Number(comment_id))) {
+    return Promise.reject({ status: 400, msg: "invalid comment_id" });
+  }
+
+  const query = `
+  UPDATE comments 
+  SET votes = votes + $1 
+  WHERE comment_id = $2 RETURNING *;`;
+
+  const updateComment = await db.query(query, [inc_votes, comment_id]);
+  console.log(updateComment.rows.length)
+  if (updateComment.rows.length === 0) {
+    return Promise.reject({ status: 404, msg: "Comment ID Not Found" });
+  }
+  return updateComment.rows[0];
+}

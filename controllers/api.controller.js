@@ -8,7 +8,8 @@ const {
   patchArticle,
   removeComment,
   retrieveAllUsers,
-  retrieveUser
+  retrieveUser,
+  patchComment
 
 } = require("../models/api.models");
 
@@ -119,4 +120,17 @@ exports.getUsersByUsername = async(req, res, next) => {
   catch(err) {
     next(err)
   }
+}
+
+
+exports.updateComments = async (req, res, next) => {
+  try {
+      const { comment_id } = req.params;
+      const {inc_votes} = req.body
+      const patchedComment = await patchComment(comment_id, inc_votes);
+      res.status(201).send({ updatedComment: patchedComment });
+    } catch (err) {
+      next(err);
+    }
+
 }

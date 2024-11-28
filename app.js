@@ -15,7 +15,8 @@ const {
   updateArticle,
   deleteComment,
   getUsers,
-  getUsersByUsername
+  getUsersByUsername,
+  updateComments
 
 } = require("./controllers/api.controller");
 
@@ -42,6 +43,7 @@ app.get("/api/users", getUsers);
 
 app.get("/api/users/:username", getUsersByUsername);
 
+app.patch("/api/comments/:comment_id", updateComments);
 
 
 app.all("/*", (req, res) => {
