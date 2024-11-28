@@ -26,32 +26,25 @@ const {
 app.use(express.json())
 app.get("/api", getApi);
 
-app.get("/api/topics", getApiTopics);
-
 
 app.get("/api/articles/:article_id", getArticle);
-
 app.get("/api/articles", getArticles);
-
 app.get("/api/articles/:article_id/comments", getArticleComments);
-
 app.post("/api/articles/:article_id/comments", postArticleComment);
-
+app.post("/api/articles", postNewArticle);
 app.patch("/api/articles/:article_id", updateArticle);
+app.delete("/api/articles/:article_id", deleteArticle)
 
+app.patch("/api/comments/:comment_id", updateComments);
 app.delete("/api/comments/:comment_id", deleteComment)
 
 app.get("/api/users", getUsers);
-
 app.get("/api/users/:username", getUsersByUsername);
 
-app.patch("/api/comments/:comment_id", updateComments);
-
-app.post("/api/articles", postNewArticle);
-
+app.get("/api/topics", getApiTopics);
 app.post("/api/topics", postNewTopic);
 
-app.delete("/api/articles/:article_id", deleteArticle)
+
 
 
 app.all("/*", (req, res) => {
