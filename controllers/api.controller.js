@@ -11,7 +11,8 @@ const {
   retrieveUser,
   patchComment,
   postArticle,
-  postTopic
+  postTopic,
+  removeArticle
 
 } = require("../models/api.models");
 
@@ -160,12 +161,16 @@ exports.postNewTopic = async (req, res, next) => {
   }
 }
 
-/*
-an object with the following properties:
-author
-title
-body
-topic
-article_img_url - will default if not provided
 
-*/
+
+exports.deleteArticle = async (req, res, next) => {
+  try {
+    const {article_id} = req.params
+    await removeArticle(article_id)
+    res.status(204).send()
+  }
+  catch (err) {
+    next(err)
+  }
+
+}

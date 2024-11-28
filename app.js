@@ -18,7 +18,8 @@ const {
   getUsersByUsername,
   updateComments,
   postNewArticle,
-  postNewTopic
+  postNewTopic,
+  deleteArticle
 
 } = require("./controllers/api.controller");
 
@@ -49,6 +50,8 @@ app.patch("/api/comments/:comment_id", updateComments);
 app.post("/api/articles", postNewArticle);
 
 app.post("/api/topics", postNewTopic);
+
+app.delete("/api/articles/:article_id", deleteArticle)
 
 
 app.all("/*", (req, res) => {

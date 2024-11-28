@@ -604,3 +604,29 @@ describe("POST /api/topics", () => {
       });
   });
 });
+
+
+
+describe("DELETE /api/articles/:article_id", () => {
+  test("removes article based on valid article_id", () => {
+    return request(app).delete("/api/articles/2").expect(204);
+  });
+
+  test("returns error if given invalid comment_id", () => {
+    return request(app)
+      .delete("/api/articles/hello")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request: invalid article id");
+      });
+  });
+
+  test("returns error if comment id does not exist", () => {
+    return request(app)
+      .delete("/api/articles/50000")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Article ID Not Found");
+      });
+  });
+});

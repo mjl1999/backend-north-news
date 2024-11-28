@@ -246,3 +246,22 @@ exports.postTopic = async (slug, description) => {
   const grabNewTopic = verifyNewTopic.rows[0]
   return grabNewTopic;
 };
+
+
+exports.removeArticle = async(article_id) => {
+  if (!Number.isInteger(Number(article_id))) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad Request: invalid article id",
+    });
+  }
+  const query = `DELETE FROM articles WHERE article_id = $1 RETURNING *;`;
+  const deletedComment = await db.query(query, [article_id]);
+
+  if (deletedComment.rows.length === 0) {
+    return Promise.reject({ status: 404, msg: "Article ID Not Found" });
+  }
+
+  return;
+
+}
