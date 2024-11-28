@@ -147,6 +147,38 @@
         }
       ]
     }
+  },
+
+
+
+  "POST /api/articles": {
+    "description": "post new article and return it with comment count",
+    "queries": [],
+    "exampleRequest": {
+      "newArticle": [
+        {
+          "author": "icellusedkars",
+          "title": "I love laptops",
+          "body": "That's all i wanted to say",
+          "topic": "mitch"
+        }
+      ]
+    },
+    "exampleResponse": {
+      "postedArticle": [
+        {
+          "author": "icellusedkars",
+          "title": "I love laptops",
+          "body": "That's all i wanted to say",
+          "topic": "mitch",
+          "article_img_url":  "https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700",
+          "votes": 0,
+          "article_id": 14,
+          "created_at": "2018-05-30T15:59:13.341Z",
+          "comment_count": 0
+        }
+      ]
+    }
   }
 }
 
