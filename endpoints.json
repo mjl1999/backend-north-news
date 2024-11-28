@@ -179,6 +179,28 @@
         }
       ]
     }
+  },
+
+
+  "POST /api/topics": {
+    "description": "posts new topic and returns it",
+    "queries": [],
+    "exampleRequest": {
+      "newTopic": [
+        {
+          "slug": "fruits",
+          "description": "Everyone needs their five a day"
+        }
+      ]
+    },
+    "exampleResponse": {
+      "postedArticle": [
+        {
+          "slug": "fruits",
+          "description": "Everyone needs their five a day"
+        }
+      ]
+    }
   }
 }
 

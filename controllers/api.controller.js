@@ -10,7 +10,8 @@ const {
   retrieveAllUsers,
   retrieveUser,
   patchComment,
-  postArticle
+  postArticle,
+  postTopic
 
 } = require("../models/api.models");
 
@@ -144,6 +145,18 @@ exports.postNewArticle = async (req, res, next) => {
     res.status(201).send({ postedArticle: articlePosted });
   } catch (err) {
     next(err);
+  }
+}
+
+
+exports.postNewTopic = async (req, res, next) => {
+  try {
+    const {slug, description} = req.body
+    const addedTopic = await postTopic(slug, description)
+    res.status(201).send({postedTopic: addedTopic})
+  }
+  catch(err) {
+    next(err)
   }
 }
 

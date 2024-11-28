@@ -227,3 +227,22 @@ exports.postArticle = async (
   const newArticleId = insertArticleAndGetId.rows[0].article_id;
   return this.retrieveArticle(newArticleId);
 };
+
+exports.postTopic = async (slug, description) => {
+  if (!slug || !description) {
+    return Promise.reject({ status: 400, msg: "Request Body Incomplete" });
+  }
+  if (typeof slug !== "string" || typeof description !== "string") {
+    return Promise.reject({
+      status: 400,
+      msg: "Incorrect Data Types In Request Body",
+    });
+  }
+  const query = `INSERT INTO topics (slug, description)
+  VALUES ($1, $2) RETURNING *;`;
+  await db.query(query, [slug, description]);
+  const checkingQuery = `SELECT * FROM topics WHERE slug = $1;`
+  const verifyNewTopic = await db.query(checkingQuery, [slug])
+  const grabNewTopic = verifyNewTopic.rows[0]
+  return grabNewTopic;
+};

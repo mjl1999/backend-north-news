@@ -555,3 +555,52 @@ describe("POST /api/articles", () => {
       });
   });
 });
+
+
+describe("POST /api/topics", () => {
+  test("posts a new topics", () => {
+    const newTopic = {
+      slug: "fruits",
+      description: "Everyone needs their five a day"
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(201)
+      .then(({ body: { postedTopic } }) => {
+        expect(postedTopic).toEqual(
+          expect.objectContaining({
+            slug: "fruits",
+            description: "Everyone needs their five a day"
+          })
+        );
+      });
+  });
+
+  test("responds with 400 if request fields are missing: ", () => {
+    const newTopic = {
+      slug: "fruits",
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Request Body Incomplete");
+      });
+  });
+
+  test("responds with 400 if request fields have wrong data types or values: ", () => {
+    const newTopic = {
+      slug: 1,
+      description: 2
+    };
+    return request(app)
+      .post("/api/topics")
+      .send(newTopic)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Incorrect Data Types In Request Body");
+      });
+  });
+});
