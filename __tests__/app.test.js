@@ -393,3 +393,32 @@ describe("GET /api/articles?topic=mitch&order=asc", () => {
       });
   });
 });
+
+
+
+describe("GET /api/users/:username", () => {
+  test("gives status of 200 and with specific user", () => {
+    return request(app)
+      .get("/api/users/icellusedkars")
+      .expect(200)
+      .then(({ body: { specifiedUser } }) => {
+        expect([specifiedUser].length).toBeGreaterThan(0);
+          expect(specifiedUser).toMatchObject({
+            username: "icellusedkars",
+            name: "sam",
+            avatar_url:'https://avatars2.githubusercontent.com/u/24604688?s=460&v=4',
+          });
+       
+      });
+  });
+
+  test("", ()=> {
+    return request(app)
+    .get("/api/users/bicycletricycle")
+    .expect(404)
+    .then(({body: {msg}})=>{
+      expect(msg).toBe("User Not Found")
+
+    })
+  })
+});

@@ -62,7 +62,6 @@
     }
   },
 
-
   "GET /api/users": {
     "description": "returns comments for a specific article",
     "queries": [],
@@ -106,17 +105,23 @@
     }
   },
 
-
   "DELETE /api/articles/:article_id": {
     "description": "deletes a specified article",
     "parameters": ["article_id"],
+    "exampleResponse": {}
+  },
+
+  "GET /api/users/:username": {
+    "description": "returns specified user",
+    "queries": ["username"],
     "exampleResponse": {
-      
+      "specifiedUser": [
+        {
+          "username": "Burgers88",
+          "name": "Matt",
+          "avatar_url": "..."
+        }
+      ]
     }
   }
-
-
-  
-
-  
 }

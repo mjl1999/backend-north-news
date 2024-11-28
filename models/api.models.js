@@ -154,3 +154,19 @@ exports.retrieveAllUsers = async () => {
   const users = await db.query(query);
   return users.rows;
 };
+
+
+exports.retrieveUser = async (user) => {
+  const availableUsers = await db.query(`SELECT username FROM users;`)
+  const userExists = availableUsers.rows.some((obj)=> {return obj.username === user})
+
+  if (userExists) {
+    const userResult = await db.query(`SELECT * FROM users WHERE username =$1;`, [user])
+    const userObj = userResult.rows[0]
+    return userObj
+  }
+
+  return Promise.reject({ status: 404, msg: "User Not Found" });
+
+
+}

@@ -7,7 +7,8 @@ const {
   postComment,
   patchArticle,
   removeComment,
-  retrieveAllUsers
+  retrieveAllUsers,
+  retrieveUser
 
 } = require("../models/api.models");
 
@@ -106,3 +107,16 @@ exports.getUsers = async (req, res, next) => {
     next(err);
   }
 };
+
+
+exports.getUsersByUsername = async(req, res, next) => {
+  try {
+    
+    const {username} = req.params
+    const user = await retrieveUser(username)
+    res.status(200).send({ specifiedUser: user })
+  }
+  catch(err) {
+    next(err)
+  }
+}

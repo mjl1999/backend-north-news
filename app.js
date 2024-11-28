@@ -12,10 +12,10 @@ const {
   getArticles, 
   getArticleComments,
   postArticleComment,
-
   updateArticle,
   deleteComment,
-  getUsers
+  getUsers,
+  getUsersByUsername
 
 } = require("./controllers/api.controller");
 
@@ -39,6 +39,8 @@ app.delete("/api/comments/:comment_id", deleteComment)
 
 
 app.get("/api/users", getUsers);
+
+app.get("/api/users/:username", getUsersByUsername);
 
 
 
