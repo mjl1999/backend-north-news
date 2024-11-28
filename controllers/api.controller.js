@@ -9,7 +9,8 @@ const {
   removeComment,
   retrieveAllUsers,
   retrieveUser,
-  patchComment
+  patchComment,
+  postArticle
 
 } = require("../models/api.models");
 
@@ -134,3 +135,24 @@ exports.updateComments = async (req, res, next) => {
     }
 
 }
+
+
+exports.postNewArticle = async (req, res, next) => {
+  try {
+    const {author, title, body, topic, article_img_url} = req.body
+    const articlePosted = await postArticle(author, title, body, topic, article_img_url);
+    res.status(201).send({ postedArticle: articlePosted });
+  } catch (err) {
+    next(err);
+  }
+}
+
+/*
+an object with the following properties:
+author
+title
+body
+topic
+article_img_url - will default if not provided
+
+*/

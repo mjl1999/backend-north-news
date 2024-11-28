@@ -16,7 +16,8 @@ const {
   deleteComment,
   getUsers,
   getUsersByUsername,
-  updateComments
+  updateComments,
+  postNewArticle
 
 } = require("./controllers/api.controller");
 
@@ -38,12 +39,13 @@ app.patch("/api/articles/:article_id", updateArticle);
 
 app.delete("/api/comments/:comment_id", deleteComment)
 
-
 app.get("/api/users", getUsers);
 
 app.get("/api/users/:username", getUsersByUsername);
 
 app.patch("/api/comments/:comment_id", updateComments);
+
+app.post("/api/articles", postNewArticle);
 
 
 app.all("/*", (req, res) => {

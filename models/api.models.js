@@ -102,11 +102,17 @@ exports.retrieveArticleComments = async (article_id) => {
 
 exports.postComment = async (article_id, username, body) => {
   if (!username || !body) {
-    return Promise.reject({status: 400, msg: "Incomplete request body: make sure username and comment body are present"})
+    return Promise.reject({
+      status: 400,
+      msg: "Incomplete request body: make sure username and comment body are present",
+    });
   }
-  const checkUsername = await db.query(`SELECT * FROM users WHERE username = $1`, [username])
+  const checkUsername = await db.query(
+    `SELECT * FROM users WHERE username = $1`,
+    [username]
+  );
   if (checkUsername.rows.length === 0) {
-    return Promise.reject({status: 400, msg: "User does not exist"})
+    return Promise.reject({ status: 400, msg: "User does not exist" });
   }
   await this.retrieveArticle(article_id);
   const query = `INSERT INTO comments (article_id, author, body, created_at)
@@ -137,7 +143,10 @@ exports.patchArticle = async (article_id, inc_votes) => {
 
 exports.removeComment = async (comment_id) => {
   if (!Number.isInteger(Number(comment_id))) {
-    return Promise.reject({ status: 400, msg: "Bad Request: invalid comment id" });
+    return Promise.reject({
+      status: 400,
+      msg: "Bad Request: invalid comment id",
+    });
   }
   const query = `DELETE FROM comments WHERE comment_id = $1 RETURNING *;`;
   const deletedComment = await db.query(query, [comment_id]);
@@ -155,25 +164,25 @@ exports.retrieveAllUsers = async () => {
   return users.rows;
 };
 
-
 exports.retrieveUser = async (user) => {
-  const availableUsers = await db.query(`SELECT username FROM users;`)
-  const userExists = availableUsers.rows.some((obj)=> {return obj.username === user})
+  const availableUsers = await db.query(`SELECT username FROM users;`);
+  const userExists = availableUsers.rows.some((obj) => {
+    return obj.username === user;
+  });
 
   if (userExists) {
-    const userResult = await db.query(`SELECT * FROM users WHERE username =$1;`, [user])
-    const userObj = userResult.rows[0]
-    return userObj
+    const userResult = await db.query(
+      `SELECT * FROM users WHERE username =$1;`,
+      [user]
+    );
+    const userObj = userResult.rows[0];
+    return userObj;
   }
 
   return Promise.reject({ status: 404, msg: "User Not Found" });
-
-
-}
-
+};
 
 exports.patchComment = async (comment_id, inc_votes) => {
-  
   if (!inc_votes) {
     return Promise.reject({ status: 400, msg: "inc_votes is not defined" });
   }
@@ -190,9 +199,31 @@ exports.patchComment = async (comment_id, inc_votes) => {
   WHERE comment_id = $2 RETURNING *;`;
 
   const updateComment = await db.query(query, [inc_votes, comment_id]);
-  console.log(updateComment.rows.length)
   if (updateComment.rows.length === 0) {
     return Promise.reject({ status: 404, msg: "Comment ID Not Found" });
   }
   return updateComment.rows[0];
-}
+};
+
+exports.postArticle = async (
+  author,
+  title,
+  body,
+  topic,
+  article_img_url = `https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700`
+) => {
+  if (!author || !title || !body || !topic) {
+    return Promise.reject({ status: 400, msg: "Request Body Incomplete" });
+  }
+  const query = `INSERT INTO articles (author, title, body, topic, article_img_url)
+  VALUES ($1, $2, $3, $4, $5) RETURNING article_id;`;
+  const insertArticleAndGetId = await db.query(query, [
+    author,
+    title,
+    body,
+    topic,
+    article_img_url,
+  ]);
+  const newArticleId = insertArticleAndGetId.rows[0].article_id;
+  return this.retrieveArticle(newArticleId);
+};

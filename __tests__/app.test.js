@@ -130,7 +130,7 @@ describe("GET /api/articles/:article_id/comments", () => {
 });
 
 describe("POST /api/articles/:article_id/comments", () => {
-  test("posts a new comment for a given article", () => {
+  test("posts a new comment for a given article and responds with the posted comment", () => {
     const comment = {
       username: "butter_bridge",
       body: "testing, testing 123",
@@ -491,6 +491,67 @@ describe("PATCH /api/comments/:comment_id", () => {
       .expect(404)
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Comment ID Not Found");
+      });
+  });
+});
+
+describe("POST /api/articles", () => {
+  test("posts a new article", () => {
+    const article = {
+      author: "icellusedkars",
+      title: "I love laptops",
+      body: "That's all i wanted to say",
+      topic: "mitch",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(article)
+      .expect(201)
+      .then(({ body: { postedArticle } }) => {
+        expect(postedArticle).toEqual(
+          expect.objectContaining({
+            author: "icellusedkars",
+            title: "I love laptops",
+            body: "That's all i wanted to say",
+            topic: "mitch",
+            article_img_url: `https://images.pexels.com/photos/97050/pexels-photo-97050.jpeg?w=700&h=700`,
+            votes: 0,
+            article_id: 14,
+            created_at: expect.any(String),
+            comment_count: 0,
+          })
+        );
+      });
+  });
+
+  test("responds with 400 if request fields are missing: ", () => {
+    const article = {
+      author: "icellusedkars",
+      title: "I love laptops",
+      body: "That's all i wanted to say",
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(article)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Request Body Incomplete");
+      });
+  });
+
+  test("responds with 400 if request fields have wrong data types or values: ", () => {
+    const article = {
+      author: 1,
+      title: 2,
+      body: 3,
+      topic: 5,
+    };
+    return request(app)
+      .post("/api/articles")
+      .send(article)
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("bad request");
       });
   });
 });
