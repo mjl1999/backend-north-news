@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require('cors')
 const {
   postgresErrorHandler,
   customErrorHandler,
@@ -23,9 +24,10 @@ const {
 
 } = require("./controllers/api.controller");
 
+app.use(cors())
 app.use(express.json())
-app.get("/api", getApi);
 
+app.get("/api", getApi);
 
 app.get("/api/articles/:article_id", getArticle);
 app.get("/api/articles", getArticles);
@@ -43,8 +45,6 @@ app.get("/api/users/:username", getUsersByUsername);
 
 app.get("/api/topics", getApiTopics);
 app.post("/api/topics", postNewTopic);
-
-
 
 
 app.all("/*", (req, res) => {
