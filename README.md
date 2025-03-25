@@ -4,7 +4,7 @@
 
 
 
-Link to hosted website https://mjl1999s-northern-news.onrender.com/
+Link to hosted endpoints https://mjl1999s-northern-news.onrender.com/
 
 
 This project is a mock news site designed to showcase all the core functionality of modern web development and web-based news applications
